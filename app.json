@@ -1,0 +1,1 @@
+{ "expo": { "name": "Tidyday", "slug": "tidyday-cleaning", "version": "1.0.0", "orientation": "portrait", "userInterfaceStyle": "light", "splash": { "backgroundColor": "#f5f7f2" }, "ios": { "supportsTablet": true }, "android": { "adaptiveIcon": { "backgroundColor": "#f5f7f2" } } } }
