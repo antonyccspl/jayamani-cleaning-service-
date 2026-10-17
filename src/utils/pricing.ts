@@ -1,6 +1,15 @@
 import { Service } from '../types';
+export const customHomeRooms=[
+ {id:'living-room',name:'Living room',price:599},
+ {id:'bedroom',name:'Bedroom',price:399},
+ {id:'bathroom',name:'Bathroom',price:349},
+ {id:'kitchen',name:'Kitchen',price:649},
+ {id:'balcony',name:'Balcony',price:249}
+];
 export function quote(service:Service,requirements:Record<string,string>,addonIds:string[]) {
  const lines:{label:string;amount:number}[]=[{label:service.name,amount:service.price}];
+ const rooms=(requirements.rooms||'').split(',').map(room=>room.trim()).filter(Boolean);
+ rooms.forEach(id=>{const room=customHomeRooms.find(option=>option.id===id);if(room)lines.push({label:`${room.name} clean`,amount:room.price});});
  if (requirements.bhk) { const tier={'Studio / 1 BHK':0,'2 BHK':550,'3 BHK':1050,'4 BHK':1600,'5+ BHK':2200}[requirements.bhk]??0; if(tier) lines.push({label:`${requirements.bhk} package`,amount:tier}); }
  if(requirements.occupancy==='Occupied home') lines.push({label:'Occupied home detail',amount:350});
  if(requirements.floors==='2 floors') lines.push({label:'Additional floor',amount:250}); if(requirements.floors==='3 floors'||requirements.floors==='4+ floors') lines.push({label:'Additional floors',amount:500});
