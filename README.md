@@ -13,7 +13,7 @@ Use the Expo terminal menu to launch an Android emulator, iOS simulator, or Expo
 
 ## Demo flows
 
-- Customer: browse/search/filter Chennai cleaning services, compare full-home packages or build a room-by-room clean, review sample ratings, service scope and FAQs, and add packages to a basket. Checkout supports a shared visit slot/address, demo promo codes, a simulated payment preference, booking tracking, reschedule/cancel requests, and a local post-service review. Guest confirmation accepts any six-digit code after a 10-digit demo phone number; it sends no SMS or payment.
+- Customer: browse/search/filter Chennai cleaning services, compare full-home packages or build a room-by-room clean. Bathroom and kitchen flows support room-specific setup, priced size/count options, optional extras, estimates, and adding configured cleans to the basket or continuing directly to scheduling. Checkout supports a shared visit slot/address, demo promo codes, a simulated payment preference, booking tracking, reschedule/cancel requests, and a local post-service review. Guest confirmation accepts any six-digit code after a 10-digit demo phone number; it sends no SMS or payment.
 - Employee: submit a local application, then use Admin → Team to approve it. The pre-seeded “Demo cleaner A” is a fictional sample account to make booking assignment immediately explorable. No real identity documents or bank information are requested.
 - Admin: open Admin access and enter the demo dashboard. Edit or add services, adjust prices and configured booking questions, review bookings, assign a demo cleaner, approve applications, and update job status.
 

@@ -1,4 +1,4 @@
-export type FieldKey = 'property'|'occupancy'|'bhk'|'area'|'floors'|'bathrooms'|'condition';
+export type FieldKey = 'property'|'occupancy'|'bhk'|'area'|'floors'|'bathrooms'|'kitchenSize'|'condition';
 export type ServicePackage = {id:string;name:string;price:number;duration:number;description:string;tag?:string};
 export type Service = { id:string; name:string; category:string; description:string; price:number; duration:number; active:boolean; paused?:boolean; leadDays:number; weekdays:number[]; slots:string[]; fields:FieldKey[]; addons:{id:string;name:string;price:number}[]; includes:string[]; excludes:string[]; discount?:number;rating?:number;reviewCount?:number;packages?:ServicePackage[] };
 export type BookingStatus = 'awaiting_assignment'|'awaiting_employee_acceptance'|'assigned'|'en_route'|'arrived'|'in_progress'|'completed'|'cancelled';
