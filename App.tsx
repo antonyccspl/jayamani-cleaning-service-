@@ -2,26 +2,26 @@ import React,{useEffect,useMemo,useState} from 'react';
 import {Alert,Animated,BackHandler,Easing,Image,KeyboardAvoidingView,Modal,Platform,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View} from 'react-native';
 import {NavigationContainer,useNavigation,useRoute} from '@react-navigation/native'; import {createNativeStackNavigator} from '@react-navigation/native-stack'; import {SafeAreaProvider,useSafeAreaInsets} from 'react-native-safe-area-context'; import {StatusBar as ExpoStatusBar} from 'expo-status-bar';
 import {MarketplaceProvider,useMarketplace} from './src/state/Marketplace'; import {Application,Booking,FieldKey,Service,ServiceConfiguration,ServicePackage} from './src/types'; import {customHomeRooms,quote} from './src/utils/pricing';
-import {cleaningFAQs,mockPromotions,sampleReviews} from './src/data/customer-content'; import {serviceCategories,ServiceCategoryId} from './src/data/service-categories';
-import {servicePhoto} from './src/data/service-images'; import {C,radii,spacing,typography} from './src/theme';
+import {cleaningFAQs,mockPromotions,sampleReviews} from './src/data/customer-content'; import {categoryKeyForLabel,getActiveServices,getServicesForCategory,serviceCategories,ServiceCategoryId} from './src/data/service-categories';
+import {servicePhoto} from './src/data/service-images'; import {C,fontWeights,iconSizes,radii,shadows,spacing,touchTargets,typography} from './src/theme';
 const Stack=createNativeStackNavigator();
 const discoveryStyles=StyleSheet.create({
    topBar:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingVertical:10,borderBottomWidth:1,borderBottomColor:C.line,backgroundColor:C.bg,zIndex:3},
   brandLine:{flexDirection:'row',alignItems:'center',marginTop:4},
-  locationButton:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',backgroundColor:'#edf7ea',paddingHorizontal:14,paddingVertical:12,borderRadius:12,marginTop:12,borderWidth:1,borderColor:'#dfeede'},
+  locationButton:{flexDirection:'row',justifyContent:'space-between',alignItems:'center',backgroundColor:C.successSurface,paddingHorizontal:14,paddingVertical:12,borderRadius:radii.sm,marginTop:12,borderWidth:1,borderColor:C.successBorder},
   search:{backgroundColor:'#fff',borderWidth:1,borderColor:C.line,paddingHorizontal:15,paddingVertical:13,borderRadius:13,marginTop:12,color:C.ink},
   searchSuggestions:{backgroundColor:C.card,borderRadius:13,borderWidth:1,borderColor:C.line,marginTop:5,paddingHorizontal:10},
   searchSuggestion:{minHeight:56,flexDirection:'row',alignItems:'center',gap:10,paddingVertical:7,borderBottomWidth:1,borderColor:C.line},
   suggestionImage:{width:42,height:42,borderRadius:9,backgroundColor:'#e5eee5'},
-  offerCard:{flexDirection:'row',alignItems:'center',backgroundColor:'#f2f7e9',borderWidth:1,borderColor:'#dfe9d4',borderRadius:15,padding:14,marginTop:12},
+  offerCard:{flexDirection:'row',alignItems:'center',backgroundColor:C.successSurface,borderWidth:1,borderColor:C.successBorder,borderRadius:radii.md,padding:14,marginTop:12},
   hero:{backgroundColor:'#1a6c56',borderRadius:22,padding:20,marginTop:15,overflow:'hidden',borderWidth:1,borderColor:'#dfeee4',shadowColor:'#183e2f',shadowOffset:{width:0,height:8},shadowOpacity:0.18,shadowRadius:14,elevation:5},
   heroPhoto:{position:'absolute',top:0,right:0,bottom:0,left:0,width:'100%',height:'100%',opacity:0.55},
   heroPhotoOverlay:{position:'absolute',top:0,right:0,bottom:0,left:0,backgroundColor:'rgba(15,68,53,0.48)'},
   heroButton:{backgroundColor:C.lime,borderRadius:10,paddingHorizontal:13,paddingVertical:11,alignSelf:'flex-start',marginTop:16},
   sectionHeading:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginTop:22,marginBottom:10},
   categoryGrid:{flexDirection:'row',flexWrap:'wrap',justifyContent:'space-between',gap:8},
-  categoryTile:{width:'48.5%',minHeight:82,flexDirection:'row',alignItems:'center',gap:10,backgroundColor:'#fff',padding:10,borderWidth:1,borderColor:C.line,borderRadius:14,shadowColor:'#1a2e29',shadowOffset:{width:0,height:3},shadowOpacity:0.06,shadowRadius:8,elevation:2},
-  categoryTileSelected:{borderColor:C.green,backgroundColor:'#edf7ea',shadowOpacity:0.12},
+  categoryTile:{width:'48.5%',minHeight:touchTargets.minimum+38,flexDirection:'row',alignItems:'center',gap:10,backgroundColor:C.card,padding:10,borderWidth:1,borderColor:C.line,borderRadius:radii.md,...shadows.card},
+  categoryTileSelected:{borderColor:C.green,backgroundColor:C.successSurface},
   categoryImage:{width:48,height:56,borderRadius:10,backgroundColor:'#e5eee5'},
   roomChoice:{backgroundColor:C.card,borderRadius:16,borderWidth:1,borderColor:C.line,overflow:'hidden',marginBottom:12},
   roomChoiceImage:{width:'100%',height:154,backgroundColor:'#e5eee5'},
@@ -73,7 +73,7 @@ const serviceCatalogStyles=StyleSheet.create({
    landingImage:{width:'100%',height:150,backgroundColor:'#e5eee5'},
    landingCopy:{padding:spacing.md},
    categoryGrid:{flexDirection:'row',flexWrap:'wrap',justifyContent:'space-between',gap:10},
-   categoryCard:{width:'48.5%',backgroundColor:C.card,borderWidth:1,borderColor:C.line,borderRadius:radii.md,overflow:'hidden'},
+   categoryCard:{width:'48.5%',backgroundColor:C.card,borderWidth:1,borderColor:C.line,borderRadius:radii.md,overflow:'hidden',...shadows.card},
    categoryImage:{width:'100%',height:92,backgroundColor:'#e5eee5'},
    categoryCopy:{padding:10,minHeight:88},
    categoryHeading:{fontSize:14,fontWeight:'700',color:C.ink},
@@ -162,7 +162,7 @@ const configurationSummary=(configuration?:ServiceConfiguration)=>configuration?
  ...Object.entries(configuration.requirements).map(([key,value])=>`${fieldLabels[key as FieldKey]||key}: ${value}`),
  ...configuration.addons.map(addon=>`${addon.name}${addon.quantity>1?` × ${addon.quantity}`:''}`)
 ].join(' · '):'';
-function Txt({children,size=15,color=C.ink,bold=false,style,...textProps}:any){return <Text {...textProps} style={[{fontSize:size,color,fontWeight:bold?'700':'400'},style]}>{children}</Text>}
+function Txt({children,size=15,color=C.ink,bold=false,style,...textProps}:any){return <Text {...textProps} style={[{fontSize:size,color,fontWeight:bold?fontWeights.bold:fontWeights.regular},style]}>{children}</Text>}
 function LocationPin({confirmed=false}:{confirmed?:boolean}){
   const pulse=React.useRef(new Animated.Value(0)).current;
   useEffect(()=>{
@@ -182,11 +182,11 @@ function LocationPin({confirmed=false}:{confirmed?:boolean}){
     <View style={[s.locationPinStem,confirmed&&s.locationPinStemConfirmed]}/>
   </View>
 }
-function Btn({title,onPress,secondary=false,disabled=false,compact=false}:any){return <TouchableOpacity disabled={disabled} onPress={onPress} style={[s.btn,compact&&adminStyles.compactButton,secondary&&s.btnSecondary,disabled&&{opacity:.45}]}><Txt size={compact?12:15} color={secondary?C.green:'#fff'} bold>{title}</Txt></TouchableOpacity>}
-function Chip({label,selected,onPress,disabled=false,compact=false}:any){return <TouchableOpacity disabled={disabled} onPress={onPress} style={[s.chip,compact&&adminStyles.compactChip,selected&&s.chipOn,disabled&&{opacity:.35}]}><Txt size={compact?11:13} color={selected?'#fff':C.ink} bold={selected}>{label}</Txt></TouchableOpacity>}
+function Btn({title,onPress,secondary=false,disabled=false,compact=false}:any){return <TouchableOpacity disabled={disabled} onPress={onPress} style={[s.btn,compact&&adminStyles.compactButton,secondary&&s.btnSecondary,disabled&&{backgroundColor:C.surfaceSoft,opacity:1}]}><Txt size={compact?12:15} color={disabled?C.disabled:secondary?C.green:C.onPrimary} bold>{title}</Txt></TouchableOpacity>}
+function Chip({label,selected,onPress,disabled=false,compact=false}:any){return <TouchableOpacity disabled={disabled} onPress={onPress} style={[s.chip,compact&&adminStyles.compactChip,selected&&s.chipOn,disabled&&{opacity:.35}]}><Txt size={compact?11:13} color={selected?C.onPrimary:C.ink} bold={selected}>{label}</Txt></TouchableOpacity>}
 function Card({children,style}:any){return <View style={[s.card,style]}>{children}</View>}
 function Heading({title,subtitle,compact=false,admin=false}:any){return <View style={compact?adminStyles.sectionHeading:admin?adminStyles.editorHeading:{marginTop:22,marginBottom:12}}><Txt size={compact?18:admin?17:21} bold>{title}</Txt>{subtitle&&<Txt size={compact||admin?12:15} color={C.muted} style={{marginTop:3}}>{subtitle}</Txt>}</View>}
-function Field({label,value,onChangeText,placeholder,keyboardType,compact=false}:any){return <View style={compact?adminStyles.field:{marginBottom:12}}><Txt size={compact?12:13} bold style={compact?adminStyles.fieldLabel:{marginBottom:6}}>{label}</Txt><TextInput value={value} onChangeText={onChangeText} placeholder={placeholder||label} placeholderTextColor="#9aa8a1" keyboardType={keyboardType} style={[s.input,compact&&adminStyles.input]}/></View>}
+function Field({label,value,onChangeText,placeholder,keyboardType,compact=false}:any){return <View style={compact?adminStyles.field:{marginBottom:12}}><Txt size={compact?12:13} bold style={compact?adminStyles.fieldLabel:{marginBottom:6}}>{label}</Txt><TextInput value={value} onChangeText={onChangeText} placeholder={placeholder||label} placeholderTextColor={C.inputPlaceholder} keyboardType={keyboardType} style={[s.input,compact&&adminStyles.input]}/></View>}
 function FooterBar(){const navigation=useNavigation<any>();const route=useRoute<any>();const activeTab=route.name==='Bookings'||route.name==='Detail'?'Bookings':route.name==='Employee'?'Cleaner':route.name==='Admin'||route.name==='EditService'?'Admin':['Home','HomeServices','RoomCleaning','Service','Basket','Book'].includes(route.name)?'Home':null;const tabs=[{name:'Home',route:'Home',icon:'⌂'},{name:'Bookings',route:'Bookings',icon:'✓'},{name:'Cleaner',route:'Employee',icon:'✦'},{name:'Admin',route:'Admin',icon:'◌'}];return <View style={[s.footerBar,{position:'relative',left:0,right:0,bottom:0,marginHorizontal:12,marginBottom:10,flexShrink:0}]}>{tabs.map(tab=>{const selected=activeTab===tab.name;return <TouchableOpacity key={tab.name} style={[s.footerItem,selected&&{backgroundColor:'#eaf6d7',borderRadius:12}]} onPress={()=>navigation.navigate(tab.route)} accessibilityRole="button" accessibilityState={{selected}}><Txt size={12} color={selected?C.green:C.muted} bold>{tab.icon}</Txt><Txt size={10} color={selected?C.green:C.muted} bold>{tab.name}</Txt></TouchableOpacity>})}</View>}
 function Screen({children,footer,scrollRef,contentStyle,stickyHeader=true,bottomSpace}:any){return <KeyboardAvoidingView style={{flex:1,backgroundColor:C.bg}} behavior={Platform.OS==='ios'?'padding':undefined}><View style={{flex:1}}><ScrollView ref={scrollRef} style={{flex:1}} stickyHeaderIndices={stickyHeader?[0]:[]} contentContainerStyle={[s.content,contentStyle,{paddingBottom:bottomSpace??(footer?230:100)}]} keyboardShouldPersistTaps="handled" keyboardDismissMode={Platform.OS==='ios'?'interactive':'on-drag'} nestedScrollEnabled showsVerticalScrollIndicator={false}>{children}</ScrollView>{footer}<FooterBar/></View></KeyboardAvoidingView>}
 function Header({title,back,compact=false}:any){return <View style={[s.header,{backgroundColor:C.bg,paddingVertical:compact?8:10,borderBottomWidth:1,borderBottomColor:C.line}]}><Txt size={compact?20:23} bold>{title}</Txt>{back&&<TouchableOpacity onPress={back}><Txt size={compact?13:15} color={C.green} bold>← Back</Txt></TouchableOpacity>}</View>}
@@ -230,7 +230,6 @@ function HomeDiscovery({navigation}:any){
   const scrollRef=React.useRef<ScrollView|null>(null);
   const serviceListOffset=React.useRef(0);
   const areas=['Adyar','Anna Nagar','T. Nagar','Velachery','Nungambakkam','Tambaram'];
-  const categories=['Home','Room','Fabric','Specialty'];
   useEffect(()=>{if(locationStep!=='fetching')return;const timer=setTimeout(()=>setLocationStep('confirm'),1400);return()=>clearTimeout(timer)},[locationStep]);
   const query=search.trim().toLowerCase();
   const shown=services.filter(service=>service.active&&!service.paused&&(filter==='Favorites'?favoriteIds.includes(service.id):filter==='All'||service.category===filter)&&(!query||[service.name,service.category,service.description,...service.addons.map(addon=>addon.name)].some(value=>value.toLowerCase().includes(query))));
@@ -265,13 +264,12 @@ function HomeDiscovery({navigation}:any){
         <TouchableOpacity onPress={()=>navigation.navigate('HomeServices',{area})} style={discoveryStyles.heroButton}><Txt color={C.ink} bold>Explore home cleaning  →</Txt></TouchableOpacity>
       </View>
       <View style={discoveryStyles.offerCard}><View style={{flex:1}}><Txt size={10} color={C.green} bold>SAMPLE DEMO OFFER · {mockPromotions[0].code}</Txt><Txt size={16} bold style={{marginTop:4}}>{mockPromotions[0].title}</Txt><Txt size={12} color={C.muted} style={{marginTop:3}}>{mockPromotions[0].description} · not a live discount</Txt></View><Txt size={21} color={C.green} bold>✦</Txt></View>
-      <View style={discoveryStyles.sectionHeading}><View><Txt size={20} bold>Browse cleaning</Txt><Txt size={13} color={C.muted} style={{marginTop:4}}>Services for every corner of home</Txt></View><TouchableOpacity onPress={()=>navigation.navigate('HomeServices',{area})} accessibilityRole="button"><Txt size={13} color={C.green} bold>All services</Txt></TouchableOpacity></View>
-      <View style={discoveryStyles.categoryGrid}>{categories.map(category=>{
-        const count=services.filter(service=>service.active&&!service.paused&&(category==='Home'||service.category===category)).length;
-        const imageId=category==='Home'?'home':category==='Room'?'bath':category==='Fabric'?'sofa':'tank';
-        return <TouchableOpacity key={category} style={[discoveryStyles.categoryTile,filter===category&&discoveryStyles.categoryTileSelected]} onPress={()=>category==='Home'?navigation.navigate('HomeServices',{area}):category==='Room'?navigation.navigate('RoomCleaning',{area}):navigation.navigate('CleaningCategory',{categoryId:category==='Fabric'?'fabric':'specialty',area})} accessibilityRole="button" accessibilityState={{selected:filter===category}}>
-          <ServiceImage id={imageId} style={discoveryStyles.categoryImage} accessibilityLabel={`${category} cleaning`} />
-          <View style={{flex:1}}><Txt size={14} bold>{category==='Home'?'Home services':category==='Room'?'Room cleaning':category==='Fabric'?'Fabric care':'Specialty care'}</Txt><Txt size={11} color={C.muted} style={{marginTop:3}}>{count} services</Txt></View><Txt color={C.muted}>&gt;</Txt>
+      <View style={discoveryStyles.sectionHeading}><View><Txt size={20} bold>Browse cleaning</Txt><Txt size={13} color={C.muted} style={{marginTop:4}}>Services for every corner of home</Txt></View><TouchableOpacity onPress={()=>navigation.navigate('CleaningCategory',{categoryId:'home-services',area})} accessibilityRole="button"><Txt size={13} color={C.green} bold>All services</Txt></TouchableOpacity></View>
+      <View style={discoveryStyles.categoryGrid}>{serviceCategories.map(category=>{
+        const count=getServicesForCategory(services,category.id).length;
+        return <TouchableOpacity key={category.id} style={discoveryStyles.categoryTile} onPress={()=>navigation.navigate('CleaningCategory',{categoryId:category.id,area})} accessibilityRole="button" accessibilityLabel={`${category.title}, ${count} services`}>
+          <ServiceImage id={category.imageId} style={discoveryStyles.categoryImage} accessibilityLabel={`${category.title} cleaning`} />
+          <View style={{flex:1}}><Txt size={14} bold>{category.title}</Txt><Txt size={11} color={C.muted} style={{marginTop:3}}>{count} services</Txt></View><Txt size={iconSizes.sm} color={C.muted}>&gt;</Txt>
         </TouchableOpacity>})}</View>
       <Card style={s.promiseStrip}><View style={s.promiseItem}><Txt color={C.green} bold>✓  Trained demo team</Txt></View><View style={s.promiseItem}><Txt color={C.green} bold>✓  Clear estimates</Txt></View><View style={s.promiseItem}><Txt color={C.green} bold>✓  Support on every visit</Txt></View></Card>
       <View onLayout={event=>{serviceListOffset.current=event.nativeEvent.layout.y}}><View style={discoveryStyles.sectionHeading}><View><Txt size={20} bold>{search?'Search results':filter==='Favorites'?'Favorite cleaning':filter==='All'?'Popular cleaning':'Popular '+filter.toLowerCase()}</Txt><Txt size={13} color={C.muted} style={{marginTop:4}}>{filter==='Favorites'?`${shown.length} saved services`:`${shown.length} services · illustrative demo pricing`}</Txt></View></View>
@@ -355,7 +353,7 @@ function HomeServicesPage({route,navigation}:any){
  const {services}=useMarketplace();
  const [query,setQuery]=useState('');
  const area=route.params?.area||'Adyar';
- const activeServices=services.filter(service=>service.active&&!service.paused);
+ const activeServices=getActiveServices(services);
  const normalizedQuery=query.trim().toLowerCase();
  const shown=activeServices.filter(service=>!normalizedQuery||[service.name,service.category,service.description,...service.addons.map(addon=>addon.name)].some(value=>value.toLowerCase().includes(normalizedQuery)));
  const openCategory=(categoryId:ServiceCategoryId)=>navigation.navigate('CleaningCategory',{categoryId,area});
@@ -374,7 +372,7 @@ function HomeServicesPage({route,navigation}:any){
   {normalizedQuery?<View style={serviceCatalogStyles.section}><Txt style={serviceCatalogStyles.groupTitle}>Search results</Txt><Txt style={serviceCatalogStyles.groupCount}>{shown.length} matching service{shown.length===1?'':'s'} · Chennai demo</Txt>{shown.length?<View style={s.serviceGrid}>{shown.map(service=><TouchableOpacity key={service.id} style={s.serviceGridItem} onPress={()=>openService(service)} accessibilityRole="button" accessibilityLabel={`View ${service.name}, from ${money(service.price)}`}><ServiceCard service={service}/></TouchableOpacity>)}</View>:<><Empty text="No services match your search."/><Btn title="Clear search and browse categories" secondary onPress={()=>setQuery('')}/></>}</View>:<>
    <View style={serviceCatalogStyles.section}><View style={discoveryStyles.sectionHeading}><View><Txt size={19} bold>Browse by category</Txt><Txt size={12} color={C.muted} style={{marginTop:3}}>Choose the type of cleaning you need</Txt></View></View>
     <View style={serviceCatalogStyles.categoryGrid}>{serviceCategories.map(category=>{
-     const count=activeServices.filter(service=>category.serviceIds.includes(service.id)).length;
+     const count=getServicesForCategory(services,category.id).length;
      return <TouchableOpacity key={category.id} style={serviceCatalogStyles.categoryCard} onPress={()=>openCategory(category.id)} accessibilityRole="button" accessibilityLabel={`${category.title}, ${count} services`}>
       <ServiceImage id={category.imageId} style={serviceCatalogStyles.categoryImage} accessibilityLabel={`${category.title} example photo`}/>
       <View style={serviceCatalogStyles.categoryCopy}><Txt style={serviceCatalogStyles.categoryHeading}>{category.title}</Txt><Txt style={serviceCatalogStyles.categoryCaption}>{count} service{count===1?'':'s'} · {category.description}</Txt></View>
@@ -395,8 +393,7 @@ function CleaningCategoryPage({route,navigation}:any){
  const {services}=useMarketplace();
  const category=serviceCategories.find(item=>item.id===route.params?.categoryId);
  const area=route.params?.area||'Adyar';
- const activeServices=services.filter(service=>service.active&&!service.paused);
- const shown=category?activeServices.filter(service=>category.serviceIds.includes(service.id)):[];
+ const shown=category?getServicesForCategory(services,category.id):[];
  const openService=(service:Service)=>navigation.navigate('Service',{service,area});
  return <Screen>
   <Header title={category?.title||'Cleaning category'} back={()=>navigation.goBack()}/>
@@ -416,31 +413,7 @@ function CleaningCategoryPage({route,navigation}:any){
  </Screen>
 }
 function RoomCleaningPage({route,navigation}:any){
- const {services}=useMarketplace();
- const roomServices=services.filter(service=>service.active&&!service.paused&&(service.id==='bath'||service.id==='kitchen'));
- const openService=(service:Service)=>navigation.navigate('Service',{service,area:route.params?.area||'Adyar'});
- return <Screen>
-  <Header title="Bathroom & kitchen" back={()=>navigation.goBack()}/>
-  <View style={discoveryStyles.hero}>
-   <Txt size={11} color="#daefad" bold>ROOM-BY-ROOM CARE</Txt>
-   <Txt size={24} color="#fff" bold style={{marginTop:7}}>Choose a room to refresh</Txt>
-   <Txt color="#e5efe9" style={{marginTop:6}}>Review the clean, choose optional extras and see your estimate before scheduling.</Txt>
-  </View>
-  {roomServices.map(service=><TouchableOpacity key={service.id} style={discoveryStyles.roomChoice} onPress={()=>openService(service)} accessibilityRole="button" accessibilityLabel={`View ${service.name}`}>
-   <ServiceImage id={service.id} style={discoveryStyles.roomChoiceImage} accessibilityLabel={`${service.name} example`}/>
-   <View style={discoveryStyles.roomChoiceBody}>
-    <View style={s.rowBetween}><Txt size={17} bold style={{flex:1}}>{service.name}</Txt><Txt color={C.green} bold>View details ›</Txt></View>
-    <Txt size={13} color={C.muted} style={{marginTop:5}}>{service.description}</Txt>
-    <View style={{flexDirection:'row',alignItems:'center',gap:8,marginTop:10}}>
-     <View style={discoveryStyles.roomChoicePrice}><Txt size={13} color={C.green} bold>From {money(service.price)}</Txt></View>
-     <Txt size={12} color={C.muted}>About {service.duration} min</Txt>
-     <Txt size={12} color={C.muted}>·</Txt>
-     <Txt size={12} color={C.muted}>{service.leadDays===0?'Booking from today':'Plan a day ahead'}</Txt>
-    </View>
-   </View>
-  </TouchableOpacity>)}
-  <Card><Txt bold>One visit, your choice</Txt><Txt color={C.muted} style={{marginTop:5}}>Configure each room clean first. You’ll choose a visit time and address before confirming.</Txt></Card>
- </Screen>
+ return <CleaningCategoryPage route={{params:{categoryId:'room',area:route.params?.area}}} navigation={navigation}/>;
 }
 function ServicePage({route,navigation}:any){
  const {services,applications,addToCart}=useMarketplace();
@@ -668,7 +641,7 @@ function ServiceEditor({route,navigation}:any){
     Alert.alert('Check service details','Add a name, description, valid base/package prices and durations, a non-negative lead time, one booking question, at least one weekday, and valid 24-hour slots.');
     return;
    }
-   const service:Service={...(orig||{id:`service-${Date.now()}`,category,active:true,weekdays:days,slots,addons:[],includes:['General surface clean'],excludes:['Repairs']}),name,category,description:desc,price:n,duration:d,leadDays:minimumLead,discount:Math.min(100,Math.max(0,Number(discount)||0)),fields:fieldSet,weekdays:days,slots,packages:packages.length?packages:undefined};
+   const service:Service={...(orig||{id:`service-${Date.now()}`,category,categoryId:categoryKeyForLabel(category),active:true,weekdays:days,slots,addons:[],includes:['General surface clean'],excludes:['Repairs']}),name,category,categoryId:categoryKeyForLabel(category),description:desc,price:n,duration:d,leadDays:minimumLead,discount:Math.min(100,Math.max(0,Number(discount)||0)),fields:fieldSet,weekdays:days,slots,packages:packages.length?packages:undefined};
    saveService(service);Alert.alert('Saved',`${name} is updated in the customer catalogue.`);navigation.goBack();
   }}/>
  </Screen>
