@@ -13,7 +13,7 @@ Use the Expo terminal menu to launch an Android emulator, iOS simulator, or Expo
 
 ## Demo flows
 
-- Customer: browse/search/filter Chennai cleaning services, compare full-home packages or build a room-by-room clean. Bathroom and kitchen flows support room-specific setup, priced size/count options, optional extras, estimates, and adding configured cleans to the basket or continuing directly to scheduling. Checkout supports a shared visit slot/address, demo promo codes, a simulated payment preference, booking tracking, reschedule/cancel requests, and a local post-service review. Guest confirmation accepts any six-digit code after a 10-digit demo phone number; it sends no SMS or payment.
+- Customer: browse/search/filter Chennai cleaning services without a sign-in prompt, open the cleaning landing screen, browse six dedicated category listings, and search for a service or add-on. Service details lead to full-home package selection or a room-by-room clean. Bathroom and kitchen flows support room-specific setup, priced size/count options, optional extras, estimates, and adding configured cleans to the basket or continuing directly to scheduling. Basket selections retain their requirements and add-ons in booking history, and booking-step back navigation preserves the current selections. Checkout supports a shared visit slot/address, demo promo codes, a simulated payment preference, booking tracking, reschedule/cancel requests, and a local post-service review. Guest confirmation accepts any six-digit code after a 10-digit demo phone number; it sends no SMS or payment.
 - Employee: submit a local application, then use Admin → Team to approve it. The pre-seeded “Demo cleaner A” is a fictional sample account to make booking assignment immediately explorable. No real identity documents or bank information are requested.
 - Admin: open Admin access and enter the demo dashboard. Edit or add services, adjust prices and configured booking questions, review bookings, assign a demo cleaner, approve applications, and update job status.
 
@@ -21,6 +21,9 @@ Use the Expo terminal menu to launch an Android emulator, iOS simulator, or Expo
 
 - `src/types.ts`: typed service, booking, employee-application, and activity models.
 - `src/data/services.ts`: central illustrative catalogue and service rules.
+- `src/data/service-categories.ts`: category-to-service mapping for cleaning landing and category listings.
+- `src/data/service-images.ts`: static local photo mapping and fallback source for catalogue and booking imagery.
+- `src/theme.ts`: shared palette and visual tokens.
 - `src/data/customer-content.ts`: clearly labeled sample cleaning FAQs, reviews, and demo offers.
 - `src/utils/pricing.ts`: local itemized quote calculation.
 - `src/state/Marketplace.tsx`: in-memory shared state and cross-screen actions.
