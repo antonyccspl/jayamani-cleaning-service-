@@ -1,15 +1,16 @@
 import {ImageSourcePropType} from 'react-native';
 
 const serviceImages:Record<string,ImageSourcePropType>={
-  home:require('../../assets/services/home-interior.jpg'),
-  'full-home-cleaning':require('../../assets/services/home-interior.jpg'),
-  interior:require('../../assets/services/home-interior.jpg'),
+  home:require('../../assets/services/home-cleaning.jpg'),
+  'full-home-cleaning':require('../../assets/services/home-cleaning.jpg'),
+  interior:require('../../assets/services/home-cleaning.jpg'),
+  'home-interior':require('../../assets/services/home-cleaning.jpg'),
   bath:require('../../assets/services/bathroom-cleaning.jpg'),
   bathroom:require('../../assets/services/bathroom-cleaning.jpg'),
   'bathroom-cleaning':require('../../assets/services/bathroom-cleaning.jpg'),
   kitchen:require('../../assets/services/kitchen-deep-clean.jpg'),
   'kitchen-deep-clean':require('../../assets/services/kitchen-deep-clean.jpg'),
-  'kitchen-cleaning':require('../../assets/services/kitchen-cleaning.jpg'),
+  'kitchen-cleaning':require('../../assets/services/kitchen-deep-clean.jpg'),
   chimney:require('../../assets/services/chimney-cleaning.jpg'),
   'chimney-cleaning':require('../../assets/services/chimney-cleaning.jpg'),
   sofa:require('../../assets/services/sofa-cleaning.jpg'),
@@ -35,6 +36,6 @@ const serviceImages:Record<string,ImageSourcePropType>={
 
 export const servicePhoto=(id:string)=>{
   const key=(id||'').toLowerCase().trim();
-  const normalized=key.replace(/\s+/g,'-');
-  return serviceImages[normalized] || serviceImages[key] || serviceImages.home;
+  const normalized=key.replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  return serviceImages[normalized] || serviceImages[key] || serviceImages['home-cleaning'];
 };

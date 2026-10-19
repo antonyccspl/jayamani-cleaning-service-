@@ -13,7 +13,7 @@ export type ServiceCategoryDefinition={
 
 export const serviceCategories:ServiceCategoryDefinition[]=[
   {id:'home-services',title:'Home services',description:'Browse all available home-cleaning services',imageId:'home',serviceGroup:'all'},
-  {id:'room',title:'Room cleaning',description:'Bathroom, kitchen and other room-specific cleaning',imageId:'floor',serviceGroup:'room'},
+  {id:'room',title:'Room cleaning',description:'Bathroom, kitchen and other room-specific cleaning',imageId:'bath',serviceGroup:'room'},
   {id:'fabric',title:'Fabric care',description:'Refresh sofas and carpeted spaces',imageId:'sofa',serviceGroup:'fabric'},
   {id:'specialty',title:'Specialty care',description:'Water tank, sump and chimney cleaning',imageId:'tank',serviceGroup:'specialty'}
 ];

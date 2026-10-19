@@ -30,10 +30,14 @@ Use the Expo terminal menu to launch an Android emulator, iOS simulator, or Expo
 - `src/state/Marketplace.tsx`: in-memory shared state and cross-screen actions.
 - `App.tsx`: navigation and customer, employee, and admin experiences.
 
+## Visual reference
+
+The attached mobile recordings informed the customer theme: white surfaces, dark compact typography, fine dividers, purple-led service actions and primary buttons, restrained green semantic status accents, horizontal service rows, and persistent booking actions on service and basket screens. The palette is a visual approximation from the video frames, not a pixel-sampled or pixel-perfect reproduction. The existing Tidyday identity and bundled service photography remain in use; no reference logos, fonts, or promotional assets were copied.
+
 ## Local service imagery
 
 The customer catalogue uses bundled sample service photography in `assets/services/`. These are presentation assets for the prototype; confirm usage rights and replace them with licensed brand photography before release.
-The Room cleaning category uses the bundled floor-cleaning photo as its general category image; there is no dedicated bedroom/living-room category photo in the current assets.
+The Room cleaning category uses the bathroom-cleaning photo as a representative room-service image. The listing uses each service's own mapped photo. No dedicated window-cleaning photo is bundled, so that service currently uses general home-cleaning photography.
 
 The product catalogue, Chennai service areas, packages, reviews, FAQs, offers, availability, cleaner profiles, and bookings are mock data held in app memory. Basket checkout creates one demo visit with its selected services and one shared arrival window. UPI is a selection preview only; no payment, messaging, location lookup, or service request reaches a real provider. These screens are intended for client review before a backend is selected.
 
